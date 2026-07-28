@@ -12,7 +12,7 @@ class TwitterAdapter implements PlatformAdapter {
   async post(contentId: string): Promise<PostResult> {
     if (!this.isConnected()) return new SimulationAdapter(this.name).post(contentId);
 
-    const content = contentDb.getById(contentId) as { text_content: string } | undefined;
+    const content = await contentDb.getById(contentId) as { text_content: string } | undefined;
     if (!content) return { success: false, error: "Content not found" };
 
     try {

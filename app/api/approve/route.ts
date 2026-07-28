@@ -10,12 +10,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "approve") {
-    contentDb.update(id, { status: "approved" });
+    await contentDb.update(id, { status: "approved" });
     return NextResponse.json({ success: true, message: "Content approved and queued for publishing" });
   }
 
   if (action === "reject") {
-    contentDb.update(id, { status: "rejected" });
+    await contentDb.update(id, { status: "rejected" });
     return NextResponse.json({ success: true, message: "Content rejected and removed from queue" });
   }
 
@@ -23,9 +23,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const pending = contentDb.getAll({ status: "pending_review" });
-  const approved = contentDb.getAll({ status: "approved" });
-  const rejected = contentDb.getAll({ status: "rejected" });
+  const [pending, approved, rejected] = await Promise.all([
+    contentDb.getAll({ status: "pending_review" }),
+    contentDb.getAll({ status: "approved" }),
+    contentDb.getAll({ status: "rejected" }),
+  ]);
 
   return NextResponse.json({
     pending,

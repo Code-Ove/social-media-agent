@@ -24,9 +24,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const latestRun = agentRunDb.getLatest();
-  const recentRuns = agentRunDb.getRecent(5);
-  const recentLogs = logsDb.getRecent(20);
+  const [latestRun, recentRuns, recentLogs] = await Promise.all([
+    agentRunDb.getLatest(),
+    agentRunDb.getRecent(5),
+    logsDb.getRecent(20),
+  ]);
 
   return NextResponse.json({
     isRunning: agentRunning,

@@ -105,7 +105,7 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
     // ── Step 5: Post any due content ─────────────────────────
     if (!AGENT_CONFIG.simulationMode) {
       log("📤 Step 5: Posting due content...", "info", "brain");
-      const dueContent = contentDb.getDueForPosting() as Array<{ id: string; platform: string }>;
+      const dueContent = await contentDb.getDueForPosting() as Array<{ id: string; platform: string }>;
       for (const item of dueContent) {
         await postContent(item.id, item.platform as Platform);
       }
@@ -124,7 +124,7 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
       finishedAt: new Date().toISOString(),
     };
 
-    agentRunDb.finish(runId, {
+    await agentRunDb.finish(runId, {
       contentGenerated,
       contentPosted: 0,
       errors,
@@ -144,7 +144,7 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
     return result;
   } catch (error) {
     log(`💥 Agent run failed: ${error}`, "error", "brain");
-    agentRunDb.finish(runId, { contentGenerated, contentPosted: 0, errors: errors + 1, status: "failed" });
+    await agentRunDb.finish(runId, { contentGenerated, contentPosted: 0, errors: errors + 1, status: "failed" });
 
     return {
       runId,
@@ -235,14 +235,14 @@ async function postContent(contentId: string, platform: Platform): Promise<void>
     const result = await adapter.default.post(contentId);
 
     if (result.success) {
-      contentDb.updateStatus(contentId, "posted", result.postId);
+      await contentDb.updateStatus(contentId, "posted", result.postId);
       log(`Posted to ${platform}: ${result.postId}`, "success", "brain");
     } else {
-      contentDb.updateStatus(contentId, "failed");
+      await contentDb.updateStatus(contentId, "failed");
       log(`Failed to post to ${platform}: ${result.error}`, "error", "brain");
     }
   } catch (err) {
-    contentDb.updateStatus(contentId, "failed");
+    await contentDb.updateStatus(contentId, "failed");
     log(`Error posting to ${platform}: ${err}`, "error", "brain");
   }
 }

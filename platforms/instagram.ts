@@ -12,7 +12,7 @@ class InstagramAdapter implements PlatformAdapter {
   async post(contentId: string): Promise<PostResult> {
     if (!this.isConnected()) return new SimulationAdapter(this.name).post(contentId);
 
-    const content = contentDb.getById(contentId) as { text_content: string; image_url?: string } | undefined;
+    const content = await contentDb.getById(contentId) as { text_content: string; image_url?: string } | undefined;
     if (!content) return { success: false, error: "Content not found" };
     if (!content.image_url) return { success: false, error: "Instagram requires an image" };
 

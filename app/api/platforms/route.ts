@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { platformDb, analyticsDb } from "@/lib/db";
 
 export async function GET() {
-  const connections = platformDb.getAll();
-  const summary = analyticsDb.getSummary();
+  const [connections, summary] = await Promise.all([
+    platformDb.getAll(),
+    analyticsDb.getSummary(),
+  ]);
 
   const platforms = connections.map(conn => {
     const analytics = summary.find(s => s.platform === conn.platform);
@@ -21,6 +23,6 @@ export async function PATCH(req: Request) {
   const { platform, ...updates } = body;
   if (!platform) return NextResponse.json({ error: "Platform required" }, { status: 400 });
 
-  platformDb.update(platform, updates);
+  await platformDb.update(platform, updates);
   return NextResponse.json({ success: true });
 }

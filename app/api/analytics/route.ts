@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { analyticsDb, contentDb } from "@/lib/db";
 
 export async function GET() {
-  const summary = analyticsDb.getSummary();
-  const recentContent = contentDb.getAll({ status: "posted", limit: 20 });
-  const simulatedContent = contentDb.getAll({ status: "simulated", limit: 20 });
+  const [summary, recentContent, simulatedContent] = await Promise.all([
+    analyticsDb.getSummary(),
+    contentDb.getAll({ status: "posted", limit: 20 }),
+    contentDb.getAll({ status: "simulated", limit: 20 }),
+  ]);
 
   // Overall stats
   const totalPosts = summary.reduce((s, p) => s + p.total_posts, 0);

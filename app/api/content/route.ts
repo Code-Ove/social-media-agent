@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const platform = searchParams.get("platform") || undefined;
   const limit = parseInt(searchParams.get("limit") || "50");
 
-  const content = contentDb.getAll({ status, platform, limit });
+  const content = await contentDb.getAll({ status, platform, limit });
   return NextResponse.json({ content, total: content.length });
 }
 
@@ -16,7 +16,7 @@ export async function DELETE(req: NextRequest) {
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-  contentDb.delete(id);
+  await contentDb.delete(id);
   return NextResponse.json({ success: true });
 }
 
@@ -25,6 +25,6 @@ export async function PATCH(req: NextRequest) {
   const { id, ...updates } = body;
   if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
-  contentDb.update(id, updates);
+  await contentDb.update(id, updates);
   return NextResponse.json({ success: true });
 }

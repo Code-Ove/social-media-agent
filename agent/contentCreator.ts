@@ -34,7 +34,8 @@ export async function createContent(
   log(`Creating ${contentType} content for ${platform}: "${topic.topic}"`);
 
   // Get best brand voice for this platform (adaptive)
-  const bestVoice = voiceStyle || (brandVoiceDb.getBestVoice(platform)?.voice_style) || "motivational";
+  const bestVoiceRecord = await brandVoiceDb.getBestVoice(platform);
+  const bestVoice = voiceStyle || bestVoiceRecord?.voice_style || "motivational";
   const platformCfg = PLATFORM_CONFIG[platform];
 
   let textContent = "";

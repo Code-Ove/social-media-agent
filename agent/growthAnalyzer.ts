@@ -31,7 +31,7 @@ export async function analyzeGrowth(): Promise<GrowthInsights> {
   log("Starting growth analysis...");
 
   try {
-    const analyticsSummary = analyticsDb.getSummary() as Array<{
+    const analyticsSummary = await analyticsDb.getSummary() as Array<{
       platform: string;
       avg_engagement: number;
       total_likes: number;
@@ -107,7 +107,7 @@ async function analyzeVoicePerformance(): Promise<VoiceRecommendation[]> {
   const recommendations: VoiceRecommendation[] = [];
 
   for (const platform of platforms) {
-    const data = analyticsDb.getByPlatform(platform, AGENT_CONFIG.analyticsLookbackDays) as Array<{
+    const data = await analyticsDb.getByPlatform(platform, AGENT_CONFIG.analyticsLookbackDays) as Array<{
       engagement_rate: number;
       topic: string;
     }>;
@@ -126,7 +126,7 @@ async function analyzeVoicePerformance(): Promise<VoiceRecommendation[]> {
 
     // Group by voice style (from metadata in topic field)
     const avgEngagement = data.reduce((sum, d) => sum + d.engagement_rate, 0) / data.length;
-    const bestVoice = brandVoiceDb.getBestVoice(platform);
+    const bestVoice = await brandVoiceDb.getBestVoice(platform);
 
     recommendations.push({
       platform,
@@ -138,7 +138,7 @@ async function analyzeVoicePerformance(): Promise<VoiceRecommendation[]> {
     });
 
     // Update brand voice metrics
-    brandVoiceDb.upsert({
+    await brandVoiceDb.upsert({
       id: uuid(),
       voice_style: bestVoice?.voice_style || getDefaultVoiceForPlatform(platform).voice,
       avg_engagement_rate: avgEngagement,

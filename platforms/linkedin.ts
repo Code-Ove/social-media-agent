@@ -17,7 +17,7 @@ class LinkedInAdapter implements PlatformAdapter {
       return new SimulationAdapter(this.name).post(contentId);
     }
 
-    const content = contentDb.getById(contentId) as {
+    const content = await contentDb.getById(contentId) as {
       text_content: string;
       image_url?: string;
       type: string;
