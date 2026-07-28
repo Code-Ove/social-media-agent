@@ -26,6 +26,7 @@ const NAV_ITEMS = [
   { href: "/", icon: "🏠", label: "Dashboard" },
   { href: "/review", icon: "👁️", label: "Review Queue" },
   { href: "/content", icon: "✍️", label: "Content" },
+  { href: "/carousel", icon: "🎠", label: "Carousel Studio" },
   { href: "/calendar", icon: "📅", label: "Calendar" },
   { href: "/analytics", icon: "📊", label: "Analytics" },
   { href: "/settings", icon: "⚙️", label: "Settings" },

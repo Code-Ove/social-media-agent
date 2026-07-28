@@ -3,6 +3,7 @@
 // ============================================================
 import { findTrendingTopics } from "./trendFinder";
 import { createContent } from "./contentCreator";
+import { generateABVariants, pickBestVariant } from "./abTester";
 import { analyzeGrowth } from "./growthAnalyzer";
 import { sendTelegramNotification } from "@/lib/telegram";
 import { contentDb, logsDb, agentRunDb } from "@/lib/db";
@@ -55,6 +56,11 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
       try {
         const voiceRec = insights.recommendedVoices.find(v => v.platform === plan.platform);
         const voiceStyle = voiceRec?.recommendedVoice;
+        const platformCfg = PLATFORM_CONFIG[plan.platform];
+
+        // 🧪 A/B Test: Generate 3 variants and pick the best one
+        log(`🧪 A/B Testing 3 hook styles for "${plan.trend.topic}" on ${plan.platform}...`, "info", "brain");
+        const abVariants = await generateABVariants(plan.trend, plan.platform, platformCfg.maxCharacters);
 
         const content = await createContent(
           plan.trend,
@@ -64,13 +70,17 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
           voiceStyle
         );
 
+        // Use A/B winner text if we got variants, otherwise use default
+        const winnerVariant = abVariants.length > 0 ? pickBestVariant(abVariants) : null;
+        const finalText = winnerVariant ? winnerVariant.text + "\n\n" + content.hashtags : content.textContent;
+
         // Save to database
         contentDb.insert({
           id: content.id,
           type: content.type,
           platform: content.platform,
           topic: content.topic,
-          text_content: content.textContent,
+          text_content: finalText,
           image_url: content.imageUrl || undefined,
           image_prompt: content.imagePrompt || undefined,
           hashtags: content.hashtags,
@@ -80,7 +90,7 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
         });
 
         contentGenerated++;
-        log(`✅ Generated ${content.type} for ${content.platform}: "${content.topic}"`, "success", "brain");
+        log(`✅ Generated ${content.type} for ${content.platform} [A/B: ${winnerVariant?.hookStyle || 'default'}]: "${content.topic}"`, "success", "brain");
 
         // Post immediately if simulation mode is off and scheduled time has passed
         if (!AGENT_CONFIG.simulationMode && new Date(content.scheduledAt) <= new Date()) {
