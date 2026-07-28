@@ -5,7 +5,7 @@ import { findTrendingTopics } from "./trendFinder";
 import { createContent } from "./contentCreator";
 import { generateABVariants, pickBestVariant } from "./abTester";
 import { analyzeGrowth } from "./growthAnalyzer";
-import { sendTelegramNotification } from "@/lib/telegram";
+import { sendTelegramNotification, sendPostForReviewTelegram } from "@/lib/telegram";
 import { contentDb, logsDb, agentRunDb } from "@/lib/db";
 import { AGENT_CONFIG, PLATFORM_CONFIG, POSTING_SCHEDULE, Platform, ContentType } from "@/lib/config";
 import { v4 as uuid } from "uuid";
@@ -92,6 +92,15 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
         contentGenerated++;
         log(`✅ Generated ${content.type} for ${content.platform} [A/B: ${winnerVariant?.hookStyle || 'default'}]: "${content.topic}"`, "success", "brain");
 
+        // Send interactive Telegram card for approval / AI rewrite / rejection
+        await sendPostForReviewTelegram({
+          id: content.id,
+          platform: content.platform,
+          topic: content.topic,
+          text_content: finalText,
+          image_url: content.imageUrl || undefined,
+        }).catch(() => {});
+
         // Post immediately if simulation mode is off and scheduled time has passed
         if (!AGENT_CONFIG.simulationMode && new Date(content.scheduledAt) <= new Date()) {
           await postContent(content.id, content.platform);
@@ -134,7 +143,7 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
     log(`🎉 Agent run completed! Generated: ${contentGenerated}, Errors: ${errors}`, "success", "brain");
 
     // Send Telegram alert if configured
-    sendTelegramNotification(
+    await sendTelegramNotification(
       `🚀 <b>InternCareerPath Agent Run Completed!</b>\n\n` +
       `📝 <b>Content Generated:</b> ${contentGenerated} posts\n` +
       `⚠️ <b>Errors:</b> ${errors}\n` +
