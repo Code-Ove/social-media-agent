@@ -96,8 +96,6 @@ async function generateTextContent(
     instagram: "Visual storytelling, punchy, emotional. Short sentences. Use line breaks. Engaging first line (hook). Emojis encouraged.",
     twitter: `Ultra-concise (under ${maxChars} chars including hashtags). Punchy, provocative, or insightful. One clear message.`,
     facebook: "Conversational, community-building, ask questions. Medium length. Encourage comments and shares.",
-    tiktok: "This is a video SCRIPT. Start with a hook. Use short punchy lines for on-screen text. TikTok-native language. 30-60 seconds read time.",
-    youtube: "This is a YouTube Shorts SCRIPT (60 seconds). Hook in first 3 seconds. Clear value proposition. Strong CTA to subscribe.",
   };
 
   const voiceGuide: Record<string, string> = {
@@ -140,8 +138,6 @@ function generateImagePrompt(topic: TrendingTopic, platform: Platform, voiceStyl
     instagram: { size: "1080x1080 square", style: "bold vibrant visual with modern typography" },
     twitter: { size: "1600x900 wide banner", style: "clean minimal graphic" },
     facebook: { size: "1200x630 landscape", style: "warm engaging community graphic" },
-    tiktok: { size: "1080x1920 vertical", style: "Gen-Z trendy bold pop art style" },
-    youtube: { size: "1280x720 thumbnail", style: "high-energy YouTube thumbnail with bold text" },
   };
 
   const voiceVisuals: Record<string, string> = {
@@ -213,8 +209,6 @@ function platformSpecificHashtags(platform: Platform): string[] {
     instagram: ["#StudentLife", "#CollegeLife", "#GradLife"],
     twitter: ["#CareerTwitter", "#JobSearch"],
     facebook: ["#CareerAdvice", "#Students"],
-    tiktok: ["#CareerTok", "#StudentTok", "#LearnOnTikTok"],
-    youtube: ["#CareerAdvice", "#StudyWithMe"],
   };
   return map[platform] || [];
 }
@@ -228,8 +222,6 @@ function generateFallbackText(topic: TrendingTopic, platform: Platform, type: Co
     instagram: `✨ ${topic.topic}\n\n${idea}\n\nSave this post for later! 📌\nTag someone who needs to see this 👇`,
     twitter: `💡 ${idea}\n\nRT if this helped you! 🔁`,
     facebook: `Hey InternCareerPath family! 👋\n\n${idea}\n\nShare your thoughts in the comments below! We'd love to hear from you. 💬`,
-    tiktok: `[HOOK] Are you making this career mistake?\n\n[POINT 1] ${idea}\n\n[TRANSITION] But wait, there's more...\n\n[CTA] Follow for daily career tips! 🔔`,
-    youtube: `[HOOK - 3 sec] Stop scrolling! This career tip will change everything.\n\n[VALUE] ${idea}\n\n[CTA] Subscribe for more career tips every day!`,
   };
 
   const content = templates[platform];

@@ -200,8 +200,6 @@ function pickBestContentType(
     instagram: ["carousel", "image"],
     twitter: ["text", "image"],
     facebook: ["image", "carousel", "text"],
-    tiktok: ["video"],
-    youtube: ["video"],
   };
 
   const preferred = preferredTypes[platform];

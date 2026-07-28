@@ -103,7 +103,7 @@ Return ONLY valid JSON.`;
 
 // ── Analyze voice performance per platform ────────────────────
 async function analyzeVoicePerformance(): Promise<VoiceRecommendation[]> {
-  const platforms: Platform[] = ["linkedin", "instagram", "twitter", "facebook", "tiktok", "youtube"];
+  const platforms: Platform[] = ["linkedin", "instagram", "twitter", "facebook"];
   const recommendations: VoiceRecommendation[] = [];
 
   for (const platform of platforms) {
@@ -156,8 +156,6 @@ function getDefaultVoiceForPlatform(platform: Platform): { voice: string; reason
     instagram: { voice: "motivational", reasoning: "Instagram users engage more with inspirational, visually paired content" },
     twitter: { voice: "conversational", reasoning: "Twitter rewards quick, punchy, relatable takes" },
     facebook: { voice: "storytelling", reasoning: "Facebook communities connect through narrative and shared experiences" },
-    tiktok: { voice: "conversational", reasoning: "TikTok thrives on authentic, casual, relatable content" },
-    youtube: { voice: "educational", reasoning: "YouTube viewers seek in-depth, structured educational content" },
   };
   return defaults[platform];
 }
@@ -171,16 +169,13 @@ function generateDefaultInsights(): GrowthInsights {
       { platform: "instagram", recommendedVoice: "motivational", reasoning: "Motivational content gets 2x more saves on Instagram", avgEngagement: 4.1 },
       { platform: "twitter", recommendedVoice: "conversational", reasoning: "Casual, direct tweets get more retweets", avgEngagement: 2.8 },
       { platform: "facebook", recommendedVoice: "storytelling", reasoning: "Story-based posts drive more comments on Facebook", avgEngagement: 2.3 },
-      { platform: "tiktok", recommendedVoice: "conversational", reasoning: "Authentic casual content performs best on TikTok", avgEngagement: 5.6 },
-      { platform: "youtube", recommendedVoice: "educational", reasoning: "Educational content has highest retention on YouTube", avgEngagement: 3.8 },
     ],
-    weeklyGrowthSummary: "InternCareerPath is building momentum across all platforms. Early content performance shows strong resonance with the target audience. LinkedIn and TikTok are showing the highest engagement potential for career content.",
+    weeklyGrowthSummary: "InternCareerPath is building momentum across all platforms. Early content performance shows strong resonance with the target audience. LinkedIn and Instagram are showing the highest engagement potential for career content.",
     actionItems: [
       "Post carousel content on LinkedIn 3x per week for maximum reach",
-      "Create 'Quick Tip' TikTok series for consistent daily engagement",
       "Use question-based captions on Instagram to boost comments",
       "Share personal student success stories on Facebook for community building",
-      "Create YouTube Shorts version of all TikTok content",
+      "Engage directly with career accounts on Twitter",
     ],
   };
 }

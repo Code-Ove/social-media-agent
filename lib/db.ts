@@ -127,8 +127,6 @@ function readDb(): DbSchema {
         { platform: "instagram", status: "simulation", follower_count: 0, updated_at: new Date().toISOString() },
         { platform: "twitter", status: "simulation", follower_count: 0, updated_at: new Date().toISOString() },
         { platform: "facebook", status: "simulation", follower_count: 0, updated_at: new Date().toISOString() },
-        { platform: "tiktok", status: "simulation", follower_count: 0, updated_at: new Date().toISOString() },
-        { platform: "youtube", status: "simulation", follower_count: 0, updated_at: new Date().toISOString() },
       ],
       agent_runs: [],
       brand_voice_metrics: [],
@@ -342,7 +340,7 @@ export const analyticsDb = {
   },
 
   getSummary: async () => {
-    const platforms = ["linkedin", "instagram", "twitter", "facebook", "tiktok", "youtube"];
+    const platforms = ["linkedin", "instagram", "twitter", "facebook"];
     if (useSupabase()) {
       const results = await Promise.all(platforms.map(async (platform) => {
         const { data } = await getSupabase().from("analytics").select("likes, comments, shares, views, engagement_rate").eq("platform", platform);

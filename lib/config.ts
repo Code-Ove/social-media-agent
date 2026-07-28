@@ -19,8 +19,6 @@ export const POSTING_SCHEDULE = {
   instagram: { postsPerDay: 1, preferredHours: [10, 13, 18] },
   twitter: { postsPerDay: 1, preferredHours: [8, 12, 16, 20] },
   facebook: { postsPerDay: 1, preferredHours: [10, 15, 19] },
-  tiktok: { postsPerDay: 1, preferredHours: [12, 17, 21] },
-  youtube: { postsPerDay: 1, preferredHours: [15, 18] }, // 1 per day (Shorts)
 };
 
 export const PLATFORM_CONFIG = {
@@ -47,18 +45,6 @@ export const PLATFORM_CONFIG = {
     contentTypes: ["text", "image", "carousel"],
     maxCharacters: 63206,
     hashtagLimit: 10,
-  },
-  tiktok: {
-    enabled: true,
-    contentTypes: ["video"],
-    maxCharacters: 2200,
-    hashtagLimit: 20,
-  },
-  youtube: {
-    enabled: true,
-    contentTypes: ["video"],
-    maxCharacters: 5000,
-    hashtagLimit: 15,
   },
 };
 
