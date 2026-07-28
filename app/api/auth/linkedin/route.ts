@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   // If no code, redirect to LinkedIn Authorization URL
   if (!code) {
-    const scope = encodeURIComponent("openid profile w_member_social email");
+    const scope = encodeURIComponent("openid profile w_member_social");
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
     return NextResponse.redirect(authUrl);
   }
