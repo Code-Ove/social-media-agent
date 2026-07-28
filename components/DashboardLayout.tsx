@@ -24,6 +24,7 @@ interface Log {
 
 const NAV_ITEMS = [
   { href: "/", icon: "🏠", label: "Dashboard" },
+  { href: "/review", icon: "👁️", label: "Review Queue" },
   { href: "/content", icon: "✍️", label: "Content" },
   { href: "/calendar", icon: "📅", label: "Calendar" },
   { href: "/analytics", icon: "📊", label: "Analytics" },
@@ -41,13 +42,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [running, setRunning] = useState(false);
   const [logs, setLogs] = useState<Log[]>([]);
 
+  const [pendingCount, setPendingCount] = useState(0);
+
   const fetchStatus = useCallback(async () => {
     try {
-      const res = await fetch("/api/agent");
-      if (res.ok) {
-        const data = await res.json();
+      const [agentRes, approveRes] = await Promise.all([
+        fetch("/api/agent"),
+        fetch("/api/approve"),
+      ]);
+      if (agentRes.ok) {
+        const data = await agentRes.json();
         setStatus({ isRunning: data.isRunning, latestRun: data.latestRun });
         setLogs(data.recentLogs?.slice(0, 8) || []);
+      }
+      if (approveRes.ok) {
+        const data = await approveRes.json();
+        setPendingCount(data.counts?.pending || 0);
       }
     } catch {
       // silently ignore
@@ -104,6 +114,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <span className="nav-icon">{item.icon}</span>
               {item.label}
+              {item.href === "/review" && pendingCount > 0 && (
+                <span className="nav-badge">{pendingCount}</span>
+              )}
             </Link>
           ))}
 

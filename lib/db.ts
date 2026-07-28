@@ -16,7 +16,7 @@ export interface ContentItem {
   image_url?: string;
   image_prompt?: string;
   hashtags?: string;
-  status: "draft" | "scheduled" | "posted" | "failed" | "simulated";
+  status: "draft" | "pending_review" | "approved" | "scheduled" | "posted" | "failed" | "simulated" | "rejected";
   scheduled_at?: string;
   posted_at?: string;
   post_id?: string;

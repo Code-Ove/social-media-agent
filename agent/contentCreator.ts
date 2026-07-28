@@ -134,13 +134,43 @@ Write ONLY the post content. No explanations, no labels, just the content.`;
 
 // ── Image prompt generator ────────────────────────────────────
 function generateImagePrompt(topic: TrendingTopic, platform: Platform, voiceStyle: string): string {
-  const aspectRatio = platform === "twitter" ? "16:9" : "1:1";
-  const style = voiceStyle === "educational" ? "clean infographic style" : "modern motivational poster style";
+  const platformSpecs: Record<Platform, { size: string; style: string }> = {
+    linkedin: { size: "1200x627 landscape banner", style: "corporate professional infographic" },
+    instagram: { size: "1080x1080 square", style: "bold vibrant visual with modern typography" },
+    twitter: { size: "1600x900 wide banner", style: "clean minimal graphic" },
+    facebook: { size: "1200x630 landscape", style: "warm engaging community graphic" },
+    tiktok: { size: "1080x1920 vertical", style: "Gen-Z trendy bold pop art style" },
+    youtube: { size: "1280x720 thumbnail", style: "high-energy YouTube thumbnail with bold text" },
+  };
 
-  return `Create a ${style} image about "${topic.topic}" for InternCareerPath social media. 
-  Professional, modern design. Purple (#6366f1) and blue (#0ea5e9) color scheme. 
-  Target audience: college students and early-career professionals. 
-  ${aspectRatio} composition. Minimal text. High contrast. Premium quality.`;
+  const voiceVisuals: Record<string, string> = {
+    motivational: "powerful inspiring imagery, sunrise or upward arrows, gold and purple tones",
+    educational: "clean whiteboard or infographic style, structured layout with icons, blue tones",
+    conversational: "friendly approachable scene, diverse students collaborating, warm lighting",
+    storytelling: "cinematic narrative scene, journey metaphor, depth of field photography style",
+    professional: "sleek corporate design, minimal clean layout, dark mode premium look",
+  };
+
+  const spec = platformSpecs[platform];
+  const visual = voiceVisuals[voiceStyle] || voiceVisuals.motivational;
+
+  return `Create a ${spec.style} social media graphic for InternCareerPath, a career guidance brand for college students and fresh graduates.
+
+TOPIC: "${topic.topic}"
+KEY MESSAGE: ${topic.contentIdeas?.[0] || "Level up your career today"}
+SIZE: ${spec.size}
+VISUAL STYLE: ${visual}
+
+DESIGN REQUIREMENTS:
+- Primary brand colors: Deep indigo (#6366f1) and electric blue (#0ea5e9) with dark navy (#0f172a) background
+- Modern, premium, millennial/Gen-Z aesthetic
+- Include subtle geometric shapes or gradient overlays
+- No stock photo watermarks
+- NO explicit text overlay (text will be added separately)
+- Photorealistic or high-quality illustration style
+- Highly shareable and scroll-stopping composition
+
+Make it visually stunning and professional enough to represent a premium career development brand.`;
 }
 
 // ── Hashtag generator ─────────────────────────────────────────

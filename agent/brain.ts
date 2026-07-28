@@ -73,7 +73,7 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
           image_url: content.imageUrl || undefined,
           image_prompt: content.imagePrompt || undefined,
           hashtags: content.hashtags,
-          status: AGENT_CONFIG.simulationMode ? "simulated" : "scheduled",
+          status: "pending_review",
           scheduled_at: content.scheduledAt,
           ai_provider: content.aiProvider,
         });
