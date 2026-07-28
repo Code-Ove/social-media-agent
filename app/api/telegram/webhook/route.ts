@@ -92,7 +92,7 @@ ${instructions}
 Rewrite the post adhering strictly to the user's instructions while keeping it appropriate for ${existing.platform}.
 Return ONLY the final rewritten post text.`;
 
-        const newText = await generateContent(prompt, "content");
+        const newText = await generateContent(prompt, "text");
 
         // Update database with rewritten text
         await contentDb.update(postId, { text_content: newText });
