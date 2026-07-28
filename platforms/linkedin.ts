@@ -29,8 +29,14 @@ class LinkedInAdapter implements PlatformAdapter {
       const personId = process.env.LINKEDIN_PERSON_ID!;
       const token = process.env.LINKEDIN_ACCESS_TOKEN!;
 
+      const authorUrn = personId.startsWith("urn:li:")
+        ? personId
+        : personId.match(/^\d+$/)
+        ? `urn:li:person:${personId}`
+        : `urn:li:organization:${personId}`;
+
       const postBody: Record<string, unknown> = {
-        author: `urn:li:person:${personId}`,
+        author: authorUrn,
         lifecycleState: "PUBLISHED",
         specificContent: {
           "com.linkedin.ugc.ShareContent": {

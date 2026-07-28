@@ -4,6 +4,7 @@
 import { findTrendingTopics } from "./trendFinder";
 import { createContent } from "./contentCreator";
 import { analyzeGrowth } from "./growthAnalyzer";
+import { sendTelegramNotification } from "@/lib/telegram";
 import { contentDb, logsDb, agentRunDb } from "@/lib/db";
 import { AGENT_CONFIG, PLATFORM_CONFIG, POSTING_SCHEDULE, Platform, ContentType } from "@/lib/config";
 import { v4 as uuid } from "uuid";
@@ -121,6 +122,15 @@ export async function runAgent(triggeredBy = "cron"): Promise<AgentRunResult> {
     });
 
     log(`🎉 Agent run completed! Generated: ${contentGenerated}, Errors: ${errors}`, "success", "brain");
+
+    // Send Telegram alert if configured
+    sendTelegramNotification(
+      `🚀 <b>InternCareerPath Agent Run Completed!</b>\n\n` +
+      `📝 <b>Content Generated:</b> ${contentGenerated} posts\n` +
+      `⚠️ <b>Errors:</b> ${errors}\n` +
+      `👁️ <b>Review Queue:</b> Action needed in dashboard!`
+    ).catch(() => {});
+
     return result;
   } catch (error) {
     log(`💥 Agent run failed: ${error}`, "error", "brain");

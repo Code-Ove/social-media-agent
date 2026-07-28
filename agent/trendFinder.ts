@@ -17,6 +17,20 @@ export async function findTrendingTopics(count = 10): Promise<TrendingTopic[]> {
   const log = (msg: string, level: "info" | "warn" | "error" | "success" | "debug" = "info") =>
     logsDb.insert({ id: uuid(), level, module: "trendFinder", message: msg });
 
+  // Check if SerpAPI key is available for real live Google Trends
+  if (process.env.SERPAPI_KEY) {
+    try {
+      log("Fetching live trends from Google Trends API...", "info");
+      const liveTrends = await fetchGoogleTrendsSerpApi(process.env.SERPAPI_KEY);
+      if (liveTrends.length > 0) {
+        log(`Fetched ${liveTrends.length} live Google Trends!`, "success");
+        return liveTrends.slice(0, count);
+      }
+    } catch (e) {
+      log(`SerpAPI error, falling back to AI trend finder: ${e}`, "warn");
+    }
+  }
+
   log("Starting trend analysis...");
 
   const prompt = `You are a social media trend analyst for ${BRAND.name}, a platform focused on ${BRAND.niche} for ${BRAND.targetAudience}.
@@ -184,4 +198,27 @@ function generateFallbackTopics(count: number): TrendingTopic[] {
   ];
 
   return fallbacks.slice(0, count);
+}
+
+// ── Live Google Trends fetch via SerpAPI ───────────────────────
+async function fetchGoogleTrendsSerpApi(apiKey: string): Promise<TrendingTopic[]> {
+  const query = "internship career jobs resume";
+  const url = `https://serpapi.com/search.json?engine=google_trends&q=${encodeURIComponent(query)}&data_type=TIMESERIES&api_key=${apiKey}`;
+
+  const res = await fetch(url);
+  if (!res.ok) return [];
+
+  const data = await res.json();
+  const related = data.related_queries?.rising || data.related_queries?.top || [];
+
+  return related.map((item: any) => ({
+    topic: item.query || item.topic?.title || "Career Trends 2025",
+    relevanceScore: Math.min(10, Math.ceil((item.value || 50) / 10)),
+    contentIdeas: [
+      `What you need to know about ${item.query || "this trend"}`,
+      `How students can capitalize on ${item.query || "this opportunity"}`,
+      `Key takeaways for your job search`,
+    ],
+    suggestedPlatforms: ["linkedin", "instagram", "twitter"],
+  }));
 }
